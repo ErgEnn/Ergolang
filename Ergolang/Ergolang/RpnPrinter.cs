@@ -1,13 +1,12 @@
 ﻿namespace Ergolang;
 
 // Reverse polish notation
-public class RpnPrinter : IVisitor<string>
+public class RpnPrinter : Expr.IVisitor<string>
 {
     public string Print(Expr expr)
     {
         return expr.Accept(this);
     }
-
     public string Visit(Expr.Binary expr)
     {
         return $"{expr.Left.Accept(this)} {expr.Right.Accept(this)} {expr.Operator.Lexeme}";
@@ -24,6 +23,16 @@ public class RpnPrinter : IVisitor<string>
     }
 
     public string Visit(Expr.Unary expr)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string Visit(Stmt.ExpressionStm expr)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string Visit(Stmt.Print expr)
     {
         throw new NotImplementedException();
     }

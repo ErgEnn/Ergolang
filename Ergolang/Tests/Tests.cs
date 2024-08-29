@@ -15,13 +15,9 @@ namespace Tests
         public void Test2()
         {
             Lang.Run("""
-                     var foo = true
-                     var bar = 10
-                     var baz = "omg"
-                     if (foo AND baz == "wtf") {
-                        bar = bar + 20
-                     }
-                     print bar
+                     print 2+1;
+                     print "one";
+                     print true;
                      """);
         }
 

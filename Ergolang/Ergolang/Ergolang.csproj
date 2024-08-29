@@ -16,6 +16,10 @@
 	  <None Remove="Generated\**" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <None Remove="AstPrinter.cs.txt" />
+	</ItemGroup>
+
 
 	<ItemGroup>
 		<ProjectReference Include="..\Generator\Generator.csproj" OutputItemType="Analyzer" ReferenceOutputAssembly="false" />
@@ -24,6 +28,10 @@
 	<ItemGroup>
 		<AdditionalFiles Include="Expr.template" />
 		<AdditionalFiles Include="Stmt.template" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Include="AstPrinter.cs.txt" />
 	</ItemGroup>
 
 

@@ -1,2 +1,2 @@
-Expression:Expr expression
-Print:Expr expression
+ExpressionStm:Expr Expression
+Print:Expr Expression

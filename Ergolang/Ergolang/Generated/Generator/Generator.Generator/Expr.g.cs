@@ -1,5 +1,12 @@
 ﻿namespace Ergolang;
-public abstract partial record Expr {
+public abstract record Expr {
+public interface IVisitor<T> {
+T Visit(Expr.Binary expr);
+T Visit(Expr.Grouping expr);
+T Visit(Expr.Literal expr);
+T Visit(Expr.Unary expr);
+}
+public abstract T Accept<T>(IVisitor<T> visitor);
 public record Binary(Expr Left, Token Operator, Expr Right) : Expr() {
      public override T Accept<T>(IVisitor<T> visitor){
          return visitor.Visit(this);

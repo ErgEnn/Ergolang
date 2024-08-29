@@ -16,21 +16,41 @@ public class Parser
         _tokens = tokens.ToArray();
     }
 
-    public Expr? Parse()
+    public IList<Stmt> Parse()
     {
-        try
+        var statements = new List<Stmt>();
+        while (!IsAtEnd())
         {
-            return Expression();
+            statements.Add(Statement());
         }
-        catch (ParseError error)
-        {
-            return null;
-        }
+
+        return statements;
     }
 
     private Expr Expression()
     {
         return Equality();
+    }
+
+    private Stmt Statement()
+    {
+        if (Match(PRINT)) return PrintStatement();
+
+        return ExpressionStatement();
+    }
+
+    private Stmt PrintStatement()
+    {
+        var value = Expression();
+        Consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Print(value);
+    }
+
+    private Stmt ExpressionStatement()
+    {
+        var value = Expression();
+        Consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.ExpressionStm(value);
     }
 
     private Expr Equality()

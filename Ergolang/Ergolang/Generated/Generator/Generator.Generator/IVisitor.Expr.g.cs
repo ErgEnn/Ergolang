@@ -1,4 +1,4 @@
-﻿namespace Ergolang;
+﻿namespace Ergolang.Expr;
 public partial interface IVisitor<T> {
 T Visit(Expr.Binary expr);
 T Visit(Expr.Grouping expr);

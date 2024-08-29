@@ -1,5 +1,5 @@
-﻿namespace Ergolang;
+﻿namespace Ergolang.Stmt;
 public partial interface IVisitor<T> {
-T Visit(Stmt.Expression expr);
-T Visit(Stmt.Print expr);
+T Visit(Stmt.ExpressionStm stmt);
+T Visit(Stmt.Print stmt);
 }

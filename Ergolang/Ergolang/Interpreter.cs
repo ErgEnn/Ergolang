@@ -1,18 +1,30 @@
 ﻿namespace Ergolang
 {
-    internal class Interpreter : IVisitor<object>
+    internal class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
-        public void Interpret(Expr expression)
+        public void Interpret(IList<Stmt> statements)
         {
             try
             {
-                var value = Evaluate(expression);
-                //Console.WriteLine(Stringify(value));
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
             }
             catch (RuntimeError e)
             {
                 Lang.RuntimeError(e);
             }
+        }
+
+        private object? Evaluate(Expr expr)
+        {
+            return expr.Accept(this);
+        }
+
+        private void Execute(Stmt stmt)
+        {
+            stmt.Accept(this);
         }
 
         public object Visit(Expr.Binary expr)
@@ -62,12 +74,7 @@
         {
             return Evaluate(expr.Expression);
         }
-
-        private object? Evaluate(Expr expr)
-        {
-            return expr.Accept(this);
-        }
-
+        
         public object Visit(Expr.Literal expr)
         {
             return expr.Value;
@@ -87,6 +94,19 @@
             }
 
             throw new InvalidOperationException();
+        }
+
+        public object Visit(Stmt.ExpressionStm stmt)
+        {
+            Evaluate(stmt.Expression);
+            return typeof(void);
+        }
+
+        public object Visit(Stmt.Print stmt)
+        {
+            var value = Evaluate(stmt.Expression);
+            Console.WriteLine(Stringify(value));
+            return typeof(void);
         }
 
         private void CheckNumberOperand(Token @operator, object? operand)
@@ -115,7 +135,7 @@
             return a.Equals(b);
         }
 
-        private string Stringfy(object obj)
+        private string Stringify(object obj)
         {
             if (obj == null) return "nil";
 
