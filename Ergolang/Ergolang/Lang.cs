@@ -19,7 +19,7 @@
             var parser = new Parser(tokens);
             var statements = parser.Parse();
 
-            if(hadError) return;
+            if (hadError) throw new Exception("Syntax error"); //return;
 
             interpreter.Interpret(statements);
         }

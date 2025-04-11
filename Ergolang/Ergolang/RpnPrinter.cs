@@ -7,6 +7,12 @@ public class RpnPrinter : Expr.IVisitor<string>
     {
         return expr.Accept(this);
     }
+
+    public string Visit(Expr.Assign expr)
+    {
+        throw new NotImplementedException();
+    }
+
     public string Visit(Expr.Binary expr)
     {
         return $"{expr.Left.Accept(this)} {expr.Right.Accept(this)} {expr.Operator.Lexeme}";
@@ -23,6 +29,11 @@ public class RpnPrinter : Expr.IVisitor<string>
     }
 
     public string Visit(Expr.Unary expr)
+    {
+        throw new NotImplementedException();
+    }
+
+    public string Visit(Expr.Variable expr)
     {
         throw new NotImplementedException();
     }

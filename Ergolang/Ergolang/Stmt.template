@@ -1,2 +1,4 @@
+Block:IList<Stmt> Statements
 ExpressionStm:Expr Expression
 Print:Expr Expression
+Var:Token Name, Expr? Initializer

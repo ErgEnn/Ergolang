@@ -8,7 +8,24 @@ namespace Tests
         [Test]
         public void Test1()
         {
-            Lang.Run("var a = 10.1");
+            Lang.Run("""
+                     var a = 1;
+                     var b = 2;
+                     a = 3;
+                     print a + b;
+                     """);
+        }
+        
+        [Test]
+        public void Test11()
+        {
+            Lang.Run("""
+                     var a = 5;
+                     {
+                       var a = a + 2;
+                       print a;
+                     }
+                     """);
         }
 
         [Test]

@@ -21,7 +21,7 @@ public class Parser
         var statements = new List<Stmt>();
         while (!IsAtEnd())
         {
-            statements.Add(Statement());
+            statements.Add(Declaration());
         }
 
         return statements;
@@ -29,14 +29,57 @@ public class Parser
 
     private Expr Expression()
     {
-        return Equality();
+        return Assignment();
+    }
+
+    private Stmt? Declaration()
+    {
+        try
+        {
+            if (Match(VAR)) return VarDeclaration();
+
+            return Statement();
+        }
+        catch (ParseError e)
+        {
+            Synchronize();
+            return null;
+        }
     }
 
     private Stmt Statement()
     {
         if (Match(PRINT)) return PrintStatement();
+        if (Match(LEFT_BRACE)) return new Stmt.Block(Block());
 
         return ExpressionStatement();
+    }
+
+    private IList<Stmt> Block()
+    {
+        var statements = new List<Stmt>();
+
+        while (!Check(RIGHT_BRACE) && !IsAtEnd())
+        {
+            statements.Add(Declaration());
+        }
+
+        Consume(RIGHT_BRACE, "Expect '}' after block.");
+        return statements;
+    }
+
+    private Stmt VarDeclaration()
+    {
+        var name = Consume(IDENTIFIER, "Expect variable name");
+        
+        Expr? initializer = null;
+        if (Match(EQUAL))
+        {
+            initializer = Expression();
+        }
+
+        Consume(SEMICOLON, "Expect ';' after value.");
+        return new Stmt.Var(name, initializer);
     }
 
     private Stmt PrintStatement()
@@ -51,6 +94,25 @@ public class Parser
         var value = Expression();
         Consume(SEMICOLON, "Expect ';' after value.");
         return new Stmt.ExpressionStm(value);
+    }
+
+    private Expr Assignment()
+    {
+        var expr = Equality();
+        if (Match(EQUAL))
+        {
+            var equals = Previous();
+            var value = Assignment();
+            if (expr is Expr.Variable variable)
+            {
+                var name = variable.Name;
+                return new Expr.Assign(name, value);
+            }
+
+            Error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
     }
 
     private Expr Equality()
@@ -130,6 +192,11 @@ public class Parser
         if (Match(NUMBER, STRING))
         {
             return new Expr.Literal(Previous().Literal);
+        }
+
+        if (Match(IDENTIFIER))
+        {
+            return new Expr.Variable(Previous());
         }
 
         if (Match(LEFT_PAREN))

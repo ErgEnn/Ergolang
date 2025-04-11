@@ -2,6 +2,8 @@
 {
     internal class Interpreter : Expr.IVisitor<object>, Stmt.IVisitor<object>
     {
+        private Environment _environment = new();
+
         public void Interpret(IList<Stmt> statements)
         {
             try
@@ -25,6 +27,31 @@
         private void Execute(Stmt stmt)
         {
             stmt.Accept(this);
+        }
+
+        private void ExecuteBlock(IList<Stmt> statements, Environment environment)
+        {
+            var previous = _environment;
+            try
+            {
+                _environment = environment;
+
+                foreach (var statement in statements)
+                {
+                    Execute(statement);
+                }
+            }
+            finally
+            {
+                _environment = previous;
+            }
+        }
+
+        public object Visit(Expr.Assign expr)
+        {
+            var value = Evaluate(expr.Value);
+            _environment.Assign(expr.Name, value);
+            return value;
         }
 
         public object Visit(Expr.Binary expr)
@@ -96,6 +123,17 @@
             throw new InvalidOperationException();
         }
 
+        public object Visit(Expr.Variable expr)
+        {
+            return _environment.Get(expr.Name);
+        }
+
+        public object Visit(Stmt.Block stmt)
+        {
+            ExecuteBlock(stmt.Statements, new Environment(_environment));
+            return null;
+        }
+
         public object Visit(Stmt.ExpressionStm stmt)
         {
             Evaluate(stmt.Expression);
@@ -107,6 +145,18 @@
             var value = Evaluate(stmt.Expression);
             Console.WriteLine(Stringify(value));
             return typeof(void);
+        }
+
+        public object Visit(Stmt.Var stmt)
+        {
+            object? value = null;
+            if (stmt.Initializer != null)
+            {
+                value = Evaluate(stmt.Initializer);
+            }
+
+            _environment.Define(stmt.Name.Lexeme.ToString(), value);
+            return null;
         }
 
         private void CheckNumberOperand(Token @operator, object? operand)
